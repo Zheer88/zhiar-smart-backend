@@ -1,0 +1,45 @@
+﻿version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: zhiar_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: zhiar_admin
+      POSTGRES_PASSWORD: ZhiarSmartSecurePassword2026!
+      POSTGRES_DB: zhiar_smart_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: zhiar_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  api:
+    build: .
+    container_name: zhiar_api
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: zhiar_admin
+      DB_PASSWORD: ZhiarSmartSecurePassword2026!
+      DB_NAME: zhiar_smart_db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_ACCESS_SECRET: ZhiarSmartSuperSecretAccess2026!Key
+      JWT_REFRESH_SECRET: ZhiarSmartSuperSecretRefresh2026!Key
+
+volumes:
+  pgdata:
